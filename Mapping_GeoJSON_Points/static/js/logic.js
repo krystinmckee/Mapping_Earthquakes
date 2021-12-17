@@ -4,7 +4,7 @@ console.log("working");
 // CREATING THE MAP --------------------------------------------------------------------------------------------------------------------------------
 
 // Create the map object with a center and zoom level.
-let map = L.map('mapid').setView([37.6213, -122.3790], 5);
+let map = L.map('mapid').setView([37.5, -122.5], 10);
 
                 // ALTERNATE to using the setView() method is to modify each attribute 
                 // in the map object using the curly braces notation as follows:
@@ -19,18 +19,18 @@ let map = L.map('mapid').setView([37.6213, -122.3790], 5);
 
 // CREATING LINES --------------------------------------------------------------------------------------------------------------------------------
 
-// Coordinates for each point to be used in the polyline.
-let line = [
-    [33.9416, -118.4085],
-    [37.6213, -122.3790],
-    [40.7899, -111.9791],
-    [47.4502, -122.3088]
-  ];
+// // Coordinates for each point to be used in the polyline.
+// let line = [
+//     [33.9416, -118.4085],
+//     [37.6213, -122.3790],
+//     [40.7899, -111.9791],
+//     [47.4502, -122.3088]
+//   ];
 
-// Create a polyline using the line coordinates and make the line yellow.
-L.polyline(line, {
-    color: "yellow"
- }).addTo(map);
+// // Create a polyline using the line coordinates and make the line yellow.
+// L.polyline(line, {
+//     color: "yellow"
+//  }).addTo(map);
 
 
 // CREATING MARKERS ON THE MAP --------------------------------------------------------------------------------------------------------------------
@@ -56,23 +56,74 @@ L.polyline(line, {
 // replace the marker variable (which we used to map one location) with the cities variable that references the five most populous cities array 
 //(located in the new cities.js file)
 
-// Get data from cities.js
-let cityData = cities;
+// // Get data from cities.js
+// let cityData = cities;
                 
 
-// Loop through the cities array and create one marker for each city.
-cityData.forEach(function(city) {
-    console.log(city)
-    // L.marker(city.location)
-    L.circleMarker(city.location, {
-        radius: city.population/200000,
-        color: "orange",
-        weight: 4 })
-    .bindPopup("<h2>" + city.city + ", " + city.state + "</h2> <hr> <h3>Population " + city.population.toLocaleString() + "</h3>")
-    .addTo(map)
-});
+// // Loop through the cities array and create one marker for each city.
+// cityData.forEach(function(city) {
+//     console.log(city)
+//     // L.marker(city.location)
+//     L.circleMarker(city.location, {
+//         radius: city.population/200000,
+//         color: "orange",
+//         weight: 4 })
+//     .bindPopup("<h2>" + city.city + ", " + city.state + "</h2> <hr> <h3>Population " + city.population.toLocaleString() + "</h3>")
+//     .addTo(map)
+// });
 
 
+// CREATING GEO JSON POINTS --------------------------------------------------------------------------------------------------------------------
+
+// Add GeoJSON data.
+let sanFranAirport =
+{"type":"FeatureCollection","features":[{
+    "type":"Feature",
+    "properties":{
+        "id":"3469",
+        "name":"San Francisco International Airport",
+        "city":"San Francisco",
+        "country":"United States",
+        "faa":"SFO",
+        "icao":"KSFO",
+        "alt":"13",
+        "tz-offset":"-8",
+        "dst":"A",
+        "tz":"America/Los_Angeles"},
+        "geometry":{
+            "type":"Point",
+            "coordinates":[-122.375,37.61899948120117]}}
+]};
+
+// GeoJSON objects are added to the map through a GeoJSON layer. Create the GeoJSON layer and add it to our map
+// L.geoJSON(geojsonFeature).addTo(map);
+
+    // // Grabbing our GeoJSON data.
+    // L.geoJSON(sanFranAirport).addTo(map);
+
+
+// Our options to add data to a marker are to use the pointToLayer or onEachFeature callback functions. 
+// With either of these functions, we can add data to a map from each GeoJSON object. 
+// The major difference between the two functions is that the pointToLayer callback function adds markers to a map, 
+// whereas the onEachFeature callback function allows you to add styling and bind data to a popup marker.
+
+// // Grabbing our GeoJSON data.
+// L.geoJSON(sanFranAirport, {
+//     // We turn each feature into a marker on the map.
+//     pointToLayer: function(feature, latlng) {
+//       console.log(feature);
+//       return L.marker(latlng)
+//       .bindPopup("<h2>" + feature.properties.city + "</h2>");
+//     }
+//   }).addTo(map);
+
+// When we use the onEachFeature callback function we can add a popup marker for each feature and add data from the properties of the JavaScript object.
+L.geoJSON(sanFranAirport, {
+    onEachFeature: function(feature, layer) {
+        console.log(layer);
+        layer.bindPopup("<h2>" + "Airport Code: " + feature.properties.faa + "</h2>" +"</n>"+ "<h2>" + "Airport Name: " + feature.properties.name + "</h2>");
+     }
+}).addTo(map);
 
 
 
